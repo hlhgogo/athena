@@ -1,0 +1,37 @@
+{
+  "app": {
+    "name": "Athena"
+  },
+  "http_server": {
+    "domain": "abc",
+    "port": 80,
+    "run_mode": "debug",
+    "read_timeout": 70,
+    "write_timeout": 70
+  },
+  "logger": {
+    "level": "debug",
+    "save_path": "runtime/logs",
+    "save_day": 3
+  },
+  "mysql": {
+    "default": {
+      "addr": "tdsqlshard-gjosf6ng.sql.tencentcdb.com:64",
+      "name": "mall_back_up",
+      "username": "dustess",
+      "password": "Dustess123~",
+      "max_conn_num": 10,
+      "min_idle_num": 10
+    }
+  },
+  "redis": {
+    "default": {
+      "addr": "localhost:6379",
+      "auth": "123456",
+      "db": 0,
+      "pool_size": 0,
+      "min_idle_conn": 10,
+      "pool_time_out": 10
+    }
+  }
+}
