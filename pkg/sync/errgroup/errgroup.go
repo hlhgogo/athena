@@ -7,6 +7,7 @@ import (
 	"sync"
 )
 
+// Group 提供带recover和并行数的errgroup，err中包含详细堆栈信息
 // A Group is a collection of goroutines working on subtasks that are part of
 // the same overall task.
 //

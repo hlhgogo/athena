@@ -3,7 +3,7 @@
     "name": "Athena"
   },
   "http_server": {
-    "domain": "abc",
+    "domain": "",
     "port": 80,
     "run_mode": "debug",
     "read_timeout": 70,
@@ -16,10 +16,10 @@
   },
   "mysql": {
     "default": {
-      "addr": "tdsqlshard-gjosf6ng.sql.tencentcdb.com:64",
-      "name": "mall_back_up",
-      "username": "dustess",
-      "password": "Dustess123~",
+      "addr": "localhost:3306",
+      "name": "",
+      "username": "root",
+      "password": "",
       "max_conn_num": 10,
       "min_idle_num": 10
     }
