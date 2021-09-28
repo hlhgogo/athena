@@ -1,16 +1,41 @@
 package mysql
 
 import (
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/hlhgogo/athena/pkg/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"sync"
 )
 
-var ClientMap = make(map[ClientName]*gorm.DB)
+var ClientMap = make(map[string]*gorm.DB)
 var clientMapLock sync.Mutex
 
-func InitClient(client ClientName, conf mysql.Config, maxConnNum int, maxIdleConn int) error {
+func Load() error {
+	configMap, err := config.GetMysqlOptions()
+	if err != nil {
+		return err
+	}
+
+	for connName, v := range configMap {
+		dsn := fmt.Sprintf("%s:%s@(%s)/%s?charset=utf8&parseTime=True&loc=Local", v.Username, v.Password, v.Addr, v.Name)
+		conf := mysql.Config{
+			DSN:                       dsn,
+			DefaultStringSize:         0,     // string 类型字段的默认长度
+			DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
+			DontSupportRenameIndex:    true,  // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
+			DontSupportRenameColumn:   true,  //  用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
+			SkipInitializeWithVersion: false, // 根据当前 MySQL 版本自动配置
+		}
+		if err := initClient(connName, conf, v.MaxConnNum, v.MaxIdleConn); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func initClient(client string, conf mysql.Config, maxConnNum int, maxIdleConn int) error {
 	clientMapLock.Lock()
 	defer clientMapLock.Unlock()
 
@@ -32,6 +57,6 @@ func InitClient(client ClientName, conf mysql.Config, maxConnNum int, maxIdleCon
 	return nil
 }
 
-func Client(name ClientName) *gorm.DB {
+func Client(name string) *gorm.DB {
 	return ClientMap[name]
 }

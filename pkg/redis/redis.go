@@ -3,14 +3,37 @@ package redis
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
+	"github.com/hlhgogo/athena/pkg/config"
 	"sync"
+	"time"
 )
 
 var clientMapLock sync.Mutex
-var clientMap = make(map[ClientName]*redis.Client)
+var clientMap = make(map[string]*redis.Client)
 
-// InitClient 初始化客户端
-func InitClient(client ClientName, rOpt *redis.Options) error {
+func Load() error {
+	configMap, err := config.GetRedisOptions()
+	if err != nil {
+		return err
+	}
+	for connName, v := range configMap {
+		conf := &redis.Options{
+			Addr:         v.Addr,
+			Password:     v.Auth,
+			DB:           v.DB,
+			MinIdleConns: v.MinIdleConn,
+			PoolSize:     v.PoolSize,
+			PoolTimeout:  v.PoolTimeout * time.Second,
+		}
+		if err := initClient(connName, conf); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// initClient 初始化客户端
+func initClient(client string, rOpt *redis.Options) error {
 	clientMapLock.Lock()
 	defer clientMapLock.Unlock()
 
@@ -26,7 +49,7 @@ func InitClient(client ClientName, rOpt *redis.Options) error {
 }
 
 // Client 获取客户端
-func Client(name ClientName) *redis.Client {
+func Client(name string) *redis.Client {
 	return clientMap[name]
 }
 

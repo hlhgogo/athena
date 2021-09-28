@@ -26,16 +26,17 @@ func shutdown() error {
 }
 
 func main() {
-	conf := config.InitConfig()
+	_ = config.InitConfig()
 	log.Setup()
 
-	if err := redis.InitClient(redis.Default, conf.GetRedisDefaultOpts()); err != nil {
+	if err := redis.Load(); err != nil {
 		panic("Redis Error:" + err.Error())
 	}
 
-	if err := mysql.InitClient(mysql.Default, conf.GetMysqlDefaultOpts(), conf.MySql.Default.MaxConnNum, conf.MySql.Default.MaxIdleConn); err != nil {
-		panic("Mysql Error:" + err.Error())
+	if err := mysql.Load(); err != nil {
+		panic(err)
 	}
+
 	g.Go(func(context.Context) (err error) {
 		if err := http.Serve(); err != nil {
 			return err
