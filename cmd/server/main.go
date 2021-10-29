@@ -5,8 +5,6 @@ import (
 	"github.com/hlhgogo/athena/internal/http"
 	"github.com/hlhgogo/athena/pkg/config"
 	"github.com/hlhgogo/athena/pkg/log"
-	"github.com/hlhgogo/athena/pkg/mysql"
-	"github.com/hlhgogo/athena/pkg/redis"
 	"github.com/hlhgogo/athena/pkg/sync/errgroup"
 	"os"
 	"os/signal"
@@ -29,13 +27,13 @@ func main() {
 	_ = config.InitConfig()
 	log.Setup()
 
-	if err := redis.Load(); err != nil {
-		panic("Redis Error:" + err.Error())
-	}
-
-	if err := mysql.Load(); err != nil {
-		panic(err)
-	}
+	//if err := redis.Load(); err != nil {
+	//	panic("Redis Error:" + err.Error())
+	//}
+	//
+	//if err := mysql.Load(); err != nil {
+	//	panic(err)
+	//}
 
 	g.Go(func(context.Context) (err error) {
 		if err := http.Serve(); err != nil {

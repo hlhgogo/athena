@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	middlewares "github.com/hlhgogo/athena/internal/http/middleware"
 	"github.com/hlhgogo/athena/pkg/config"
 	"github.com/hlhgogo/athena/pkg/log"
-	"io"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -16,6 +15,12 @@ var httpServer *http.Server
 
 func router() http.Handler {
 	r := gin.New()
+
+	r.Use(middlewares.Trace())
+	r.Use(middlewares.Cors())
+	r.Use(middlewares.Recovery())
+	r.Use(middlewares.LoggerWithFormatter())
+	r.NoRoute(middlewares.PageNotFound)
 
 	err := initRouter(r)
 	if err != nil {
@@ -29,7 +34,7 @@ func router() http.Handler {
 func Serve() error {
 	// Do Stuff Here
 	gin.SetMode(config.Get().HttpServer.RunMode)
-	gin.DefaultWriter = io.MultiWriter(log.GetGinLogIoWriter(), os.Stdout)
+	//gin.DefaultWriter = io.MultiWriter(log.GetGinLogIoWriter(), os.Stdout)
 
 	readTimeout := config.Get().HttpServer.ReadTimeout
 	writeTimeout := config.Get().HttpServer.WriteTimeout

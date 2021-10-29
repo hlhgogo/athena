@@ -1,0 +1,46 @@
+package middlewares
+
+import (
+	"bytes"
+	"github.com/gin-gonic/gin"
+	athCtx "github.com/hlhgogo/athena/pkg/context"
+	"github.com/satori/go.uuid"
+)
+
+type responseBodyWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (r responseBodyWriter) Write(b []byte) (int, error) {
+	r.body.Write(b)
+	return r.ResponseWriter.Write(b)
+}
+
+func Trace() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// bind request id
+		requestId := c.Request.Header.Get("X-Request-Id")
+		if requestId == "" {
+			requestId = uuid.NewV4().String()
+		}
+
+		// save trace id to context
+		commonValue := make(map[athCtx.CtxValueCommonKey]string)
+		cv := athCtx.GetCtxValue(c.Request.Context())
+		if cv != nil {
+			commonValue = cv.GetCommonValue()
+			commonValue[athCtx.CtxValueCommonKeyTraceID] = requestId
+		}
+		athValue := athCtx.NewCtxValue(commonValue)
+		athContext, _ := athCtx.SetCtxValue(c.Request.Context(), athValue)
+		c.Request = c.Request.WithContext(athContext)
+		c.Header("Trace-Id", requestId)
+
+		// ...
+		w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
+		c.Writer = w
+
+		c.Next()
+	}
+}

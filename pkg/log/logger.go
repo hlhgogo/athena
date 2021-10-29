@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/go-errors/errors"
 	"github.com/hlhgogo/athena/pkg/config"
 	"github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
@@ -14,41 +15,15 @@ import (
 )
 
 const (
-	Type                   = "app"
+	// Type 日志类型
+	Type = "app"
+	// DefaultTimestampFormat 时间格式
 	DefaultTimestampFormat = "2006-01-02 15:04:05"
 )
 
 var (
 	log *logrus.Logger
 )
-
-// Trace trace log
-func Trace(args ...interface{}) {
-	log.WithFields(logrus.Fields{
-		"type": Type,
-	}).Trace(args...)
-}
-
-// Tracef info log
-func Tracef(args ...interface{}) {
-	log.WithFields(logrus.Fields{
-		"type": Type,
-	}).Trace(args...)
-}
-
-// Debug info log
-func Debug(args ...interface{}) {
-	log.WithFields(logrus.Fields{
-		"type": Type,
-	}).Debug(args...)
-}
-
-// Debugf info log
-func Debugf(args ...interface{}) {
-	log.WithFields(logrus.Fields{
-		"type": Type,
-	}).Debug(args...)
-}
 
 // Info info log
 func Info(args ...interface{}) {
@@ -78,46 +53,25 @@ func Warnf(format string, args ...interface{}) {
 	}).Warn(fmt.Sprintf(format, args...))
 }
 
-// Error error log
+// Error 打印错误对象
 func Error(args ...interface{}) {
+	err := errors.New(args)
 	log.WithFields(logrus.Fields{
-		"type": Type,
+		"type":  Type,
+		"stack": err.ErrorStack(),
 	}).Error(args...)
 }
 
-// Errorf error 格式化输出warn log
+// Errorf 打印错误信息
 func Errorf(format string, args ...interface{}) {
+	err := errors.New(fmt.Sprintf(format, args...))
 	log.WithFields(logrus.Fields{
-		"type": Type,
-	}).Error(fmt.Sprintf(format, args...))
+		"type":  Type,
+		"stack": err.ErrorStack(),
+	}).Error(args...)
 }
 
-func GetGinLogIoWriter() io.Writer {
-	writer, err := rotatelogs.New(
-		config.Get().Logger.SavePath+"/api-%Y-%m-%d.log",
-		rotatelogs.WithMaxAge(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour),       // Maximum file save time
-		rotatelogs.WithRotationTime(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour), // Log the cut interval
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	return writer
-}
-
-func GetProjectIoWriter() io.Writer {
-	writer, err := rotatelogs.New(
-		config.Get().Logger.SavePath+"/gin-%Y-%m-%d.log",
-		rotatelogs.WithMaxAge(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour),       // Maximum file save time
-		rotatelogs.WithRotationTime(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour), // Log the cut interval
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	return writer
-}
-
+// LineFormatter ...
 type LineFormatter struct {
 	// TimestampFormat to use for display when a full timestamp is printed
 	TimestampFormat string
@@ -141,7 +95,6 @@ func (f *LineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		if b, err := json.Marshal(entry.Data); err == nil {
 			field = string(b)
 		}
-
 	}
 
 	b.WriteString(fmt.Sprintf("%s [%s] [%s] %s - %s %s\n", config.Get().App.Name, strings.ToUpper(entry.Level.String()), entry.Time.Format(timestampFormat),
@@ -150,6 +103,7 @@ func (f *LineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+// Setup ...
 func Setup() {
 	env := os.Getenv("APP_ENV")
 	if env == "" {
@@ -190,4 +144,32 @@ func Setup() {
 		level = logrus.FatalLevel
 	}
 	log.SetLevel(level)
+}
+
+// GetGinLogIoWriter gin日志保存规则ioWriter
+func GetGinLogIoWriter() io.Writer {
+	writer, err := rotatelogs.New(
+		config.Get().Logger.SavePath+"/api-%Y-%m-%d.log",
+		rotatelogs.WithMaxAge(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour),       // Maximum file save time
+		rotatelogs.WithRotationTime(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour), // Log the cut interval
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	return writer
+}
+
+// GetProjectIoWriter 业务日志保存规则ioWriter
+func GetProjectIoWriter() io.Writer {
+	writer, err := rotatelogs.New(
+		config.Get().Logger.SavePath+"/gin-%Y-%m-%d.log",
+		rotatelogs.WithMaxAge(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour),       // Maximum file save time
+		rotatelogs.WithRotationTime(time.Duration(config.Get().Logger.SaveDay)*24*time.Hour), // Log the cut interval
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	return writer
 }
