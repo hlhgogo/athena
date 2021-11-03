@@ -3,7 +3,9 @@ package middlewares
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
+	"github.com/hlhgogo/athena/pkg/app"
 	athCtx "github.com/hlhgogo/athena/pkg/context"
+	"github.com/hlhgogo/athena/pkg/log"
 	"github.com/satori/go.uuid"
 )
 
@@ -19,6 +21,7 @@ func (r responseBodyWriter) Write(b []byte) (int, error) {
 
 func Trace() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		// bind request id
 		requestId := c.Request.Header.Get("X-Request-Id")
 		if requestId == "" {
@@ -40,6 +43,9 @@ func Trace() gin.HandlerFunc {
 		// ...
 		w := &responseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
 		c.Writer = w
+
+		// log with request info
+		log.InfoMapWithTrace(c.Request.Context(), app.RequestInfo(c), "Request")
 
 		c.Next()
 	}

@@ -23,9 +23,27 @@ func InfoWithTrace(ctx context.Context, format string, args ...interface{}) {
 	log.WithFields(getTraceField(ctx)).Infof(format, args...)
 }
 
+// InfoMapWithTrace info增加map信息到日志
+func InfoMapWithTrace(ctx context.Context, infos map[string]interface{}, format string, args ...interface{}) {
+	fields := getTraceField(ctx)
+	for k, v := range infos {
+		fields[k] = v
+	}
+	log.WithFields(fields).Infof(format, args...)
+}
+
 // WarnWithTrace warn增加traceId
 func WarnWithTrace(ctx context.Context, format string, args ...interface{}) {
 	log.WithFields(getTraceField(ctx)).Warnf(format, args...)
+}
+
+// WarnMapWithTrace warn增加map信息到日志
+func WarnMapWithTrace(ctx context.Context, infos map[string]interface{}, format string, args ...interface{}) {
+	fields := getTraceField(ctx)
+	for k, v := range infos {
+		fields[k] = v
+	}
+	log.WithFields(fields).Warnf(format, args...)
 }
 
 // ErrorWithTrace Error增加traceId
@@ -39,7 +57,23 @@ func ErrorWithTrace(ctx context.Context, err error, format string, args ...inter
 		fields["stack"] = newErr.ErrorStack()
 	}
 
-	log.WithFields(getTraceField(ctx)).Errorf(format, args...)
+	log.WithFields(fields).Errorf(format, args...)
+}
+
+// ErrorMapWithTrace error增加map信息到日志
+func ErrorMapWithTrace(ctx context.Context, infos map[string]interface{}, err error, format string, args ...interface{}) {
+	fields := getTraceField(ctx)
+	for k, v := range infos {
+		fields[k] = v
+	}
+	switch err := err.(type) {
+	case *errors.Error:
+		fields["stack"] = err.ErrorStack()
+	default:
+		newErr := errors.Wrap(fmt.Sprintf(format, args...), 1)
+		fields["stack"] = newErr.ErrorStack()
+	}
+	log.WithFields(fields).Infof(format, args...)
 }
 
 // getTraceField 获取loggerField
