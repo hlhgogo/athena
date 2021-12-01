@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/go-errors/errors"
-	"github.com/hlhgogo/athena/pkg/config"
-	"github.com/lestrrat-go/file-rotatelogs"
-	"github.com/sirupsen/logrus"
 	"io"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/go-errors/errors"
+	"github.com/hlhgogo/athena/pkg/config"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -97,8 +98,17 @@ func (f *LineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		}
 	}
 
+	// log file and line
+	source := ""
+	fileLine, ok := entry.Data[Source]
+	if ok {
+		if v, ok := fileLine.(string); ok {
+			source = v
+		}
+	}
+
 	b.WriteString(fmt.Sprintf("%s [%s] [%s] %s - %s %s\n", config.Get().App.Name, strings.ToUpper(entry.Level.String()), entry.Time.Format(timestampFormat),
-		fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line), entry.Message, field))
+		source, entry.Message, field))
 
 	return b.Bytes(), nil
 }
@@ -144,6 +154,7 @@ func Setup() {
 		level = logrus.FatalLevel
 	}
 	log.SetLevel(level)
+	log.AddHook(NewContextHook(level))
 }
 
 // GetGinLogIoWriter gin日志保存规则ioWriter
