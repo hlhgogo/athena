@@ -1,6 +1,7 @@
 {
   "app": {
-    "name": "Athena"
+    "name": "Athena",
+    "show_trace": true
   },
   "http_server": {
     "domain": "",

@@ -1,8 +1,10 @@
 package http
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	orderApi "github.com/hlhgogo/athena/internal/order/controller/http"
 )
 
 const (
@@ -20,5 +22,9 @@ func initRouter(router *gin.Engine) error {
 		ctx.String(http.StatusOK, "ok")
 	})
 
+	order := router.Group(v1prefix + "/")
+	{
+		order.GET("order_list", orderApi.OrderList)
+	}
 	return nil
 }

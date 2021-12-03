@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"math/rand"
-	"os"
 	"reflect"
 )
 
@@ -33,18 +32,6 @@ func InArray(val interface{}, array interface{}) (index int) {
 	}
 
 	return -1
-}
-
-func IsDevelopmentEnv() bool {
-	env := os.Getenv("APP_ENV")
-	if env == "local" || env == "" {
-		env = "local"
-	}
-
-	if InArray(env, []string{"prod", "pre", "rc"}) == -1 {
-		return true
-	}
-	return false
 }
 
 func RequestInfo(c *gin.Context) map[string]interface{} {

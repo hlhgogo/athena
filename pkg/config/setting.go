@@ -9,7 +9,8 @@ var config *Config
 
 type Config struct {
 	App struct {
-		Name string `id:"name" default:""`
+		Name      string `id:"name" default:"Athena"`
+		ShowTrace bool   `id:"show_trace" default:"true"`
 	} `id:"app" desc:"application config"`
 
 	Logger struct {

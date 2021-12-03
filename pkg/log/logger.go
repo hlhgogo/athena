@@ -115,11 +115,6 @@ func (f *LineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 // Setup ...
 func Setup() {
-	env := os.Getenv("APP_ENV")
-	if env == "" {
-		env = "local"
-	}
-
 	log = logrus.New()
 
 	log.SetReportCaller(true)
@@ -129,7 +124,7 @@ func Setup() {
 	writers := []io.Writer{writer}
 
 	// Local development output to the console
-	if env == "local" {
+	if config.Get().App.ShowTrace {
 		writers = append(writers, os.Stdout)
 	}
 

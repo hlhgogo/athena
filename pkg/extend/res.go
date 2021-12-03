@@ -1,9 +1,12 @@
 package extend
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/hlhgogo/athena/pkg/config"
 	athCtx "github.com/hlhgogo/athena/pkg/context"
 	"github.com/hlhgogo/athena/pkg/errors"
+	"github.com/hlhgogo/athena/pkg/log"
 	"net/http"
 )
 
@@ -13,6 +16,7 @@ type Res struct {
 	Code    int         `json:"code,omitempty"`
 	Msg     string      `json:"msg"`
 	Data    interface{} `json:"data"`
+	Debug   interface{} `json:"debug,omitempty"`
 	TraceID string      `json:"traceId,omitempty"`
 }
 
@@ -28,7 +32,11 @@ func SendSuccess(ctx *gin.Context, resData interface{}) {
 	res = successRes()
 
 	res.Data = resData
-	res.TraceID = athCtx.GetTraceId(ctx)
+	res.TraceID = athCtx.GetTraceId(ctx.Request.Context())
+
+	if responseByte, err := json.Marshal(res); err == nil {
+		log.InfoWithTrace(ctx.Request.Context(), "Response:%s", string(responseByte))
+	}
 
 	ctx.JSON(http.StatusOK, res)
 }
@@ -78,7 +86,18 @@ func SendData(ctx *gin.Context, resData interface{}, err error) {
 	}
 
 	res.Data = resData
-	res.TraceID = athCtx.GetTraceId(ctx)
+	res.TraceID = athCtx.GetTraceId(ctx.Request.Context())
+
+	if config.Get().App.ShowTrace {
+		if stack, ok := ctx.Get("Stack"); ok {
+			res.Debug = stack
+		}
+	}
+
+	// 记录响应日志
+	if responseByte, err := json.Marshal(res); err == nil {
+		log.InfoWithTrace(ctx.Request.Context(), "Response:%s", string(responseByte))
+	}
 
 	ctx.JSON(httpStatus, res)
 }
