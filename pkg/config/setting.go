@@ -13,6 +13,12 @@ type Config struct {
 		ShowTrace bool   `id:"show_trace" default:"true"`
 	} `id:"app" desc:"application config"`
 
+	Sentry struct {
+		Dsn         string `id:"dsn" default:""`
+		Environment string `id:"environment" default:"development"`
+		Release     string `id:"release" default:"v1.0.0"`
+	} `id:"sentry" desc:"sentry config"`
+
 	Logger struct {
 		Level    string `id:"level" default:""`
 		SavePath string `id:"save_path" default:""`

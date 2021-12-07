@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	middlewares "github.com/hlhgogo/athena/internal/http/middleware"
 	"github.com/hlhgogo/athena/pkg/config"
+	"github.com/hlhgogo/athena/pkg/gin-ext/middlewares"
 	"github.com/hlhgogo/athena/pkg/log"
 	"net/http"
 	"time"
@@ -17,6 +17,7 @@ func router() http.Handler {
 	r := gin.New()
 
 	r.Use(middlewares.Trace())
+	r.Use(middlewares.Sentry())
 	r.Use(middlewares.Cors())
 	r.Use(middlewares.Recovery())
 	r.Use(middlewares.LoggerWithFormatter())

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/hlhgogo/athena/pkg/gin-ext/sentry"
 	"os"
 	"os/signal"
 	"syscall"
@@ -35,6 +36,11 @@ func main() {
 	//if err := mysql.Load(); err != nil {
 	//	panic(err)
 	//}
+
+	// 初始化sentry事件上报
+	if config.Get().Sentry.Dsn != "" {
+		sentry.Load()
+	}
 
 	// 事件初始化
 	event.Init()

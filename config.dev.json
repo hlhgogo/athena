@@ -3,6 +3,11 @@
     "name": "Athena",
     "show_trace": true
   },
+  "sentry": {
+    "dsn": "https://6f84711a4a284db9b12cd63ef82d19e6@o938643.ingest.sentry.io/5888440",
+    "environment": "development",
+    "Release": "v1.0.0"
+  },
   "http_server": {
     "domain": "",
     "port": 80,
@@ -30,7 +35,7 @@
       "addr": "localhost:6379",
       "auth": "123456",
       "db": 0,
-      "pool_size": 0,
+      "pool_size": 10,
       "min_idle_conn": 10,
       "pool_time_out": 10
     }

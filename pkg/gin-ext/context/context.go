@@ -2,6 +2,7 @@ package context
 
 import (
 	"context"
+	"github.com/getsentry/sentry-go"
 )
 
 // CtxValueCommonKey ctx common value key
@@ -11,8 +12,6 @@ type CtxValueCommonKey string
 const (
 	// CtxValueCommonKeyTraceID traceId
 	CtxValueCommonKeyTraceID CtxValueCommonKey = "traceId"
-	// CtxValueErrorKeyId errorObj
-	CtxValueErrorKeyId CtxValueCommonKey = "errorObj"
 )
 
 // CtxValueKey ctx value key
@@ -26,7 +25,8 @@ const (
 
 // CtxValue 上下文内容
 type CtxValue struct {
-	common map[CtxValueCommonKey]string
+	common    map[CtxValueCommonKey]string
+	sentryHub *sentry.Hub
 }
 
 // GetCommonValue get common value
@@ -34,9 +34,20 @@ func (v *CtxValue) GetCommonValue() map[CtxValueCommonKey]string {
 	return v.common
 }
 
+// GetSentryHub 获取GetSentryHub
+func (v *CtxValue) GetSentryHub() *sentry.Hub {
+	return v.sentryHub
+}
+
 // SetCommonValue set common value
 func (v *CtxValue) SetCommonValue(cv map[CtxValueCommonKey]string) *CtxValue {
 	v.common = cv
+	return v
+}
+
+// SetSentryHub set sentry hub
+func (v *CtxValue) SetSentryHub(hub *sentry.Hub) *CtxValue {
+	v.sentryHub = hub
 	return v
 }
 
@@ -62,11 +73,10 @@ func GetCtxValue(ctx context.Context) *CtxValue {
 		if v.common == nil {
 			v.common = map[CtxValueCommonKey]string{}
 		}
-
 		return v
 	}
 
-	return &CtxValue{map[CtxValueCommonKey]string{}}
+	return &CtxValue{map[CtxValueCommonKey]string{}, nil}
 }
 
 // GetTraceId 获取traceId
@@ -85,11 +95,4 @@ func GetTraceId(ctx context.Context) string {
 func SetCtxValue(ctx context.Context, value *CtxValue) (context.Context, *CtxValue) {
 	ctx = context.WithValue(ctx, CtxValueKeyV1, value)
 	return ctx, value
-}
-
-// SetCommonValue 设置ctx common value
-func SetCommonValue(ctx context.Context, data map[CtxValueCommonKey]string) (context.Context, *CtxValue) {
-	cv := newCtxValue(data)
-	ctx = context.WithValue(ctx, CtxValueKeyV1, cv)
-	return ctx, cv
 }

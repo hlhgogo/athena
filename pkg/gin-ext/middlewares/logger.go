@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hlhgogo/athena/pkg/config"
-	athCtx "github.com/hlhgogo/athena/pkg/context"
+	athCtx "github.com/hlhgogo/athena/pkg/gin-ext/context"
 	"time"
 )
 

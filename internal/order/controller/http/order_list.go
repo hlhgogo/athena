@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hlhgogo/athena/pkg/extend"
+	"github.com/hlhgogo/athena/pkg/gin-ext/extend"
 )
 
 // orderListReq 查询订单列表请求结构体
@@ -26,7 +26,6 @@ func OrderList(ctx *gin.Context) {
 		return
 	}
 
-	panic(1)
 	resp := orderListResp{
 		ID:   "111",
 		Name: "2222",

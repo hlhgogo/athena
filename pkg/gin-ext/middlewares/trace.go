@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/gin-gonic/gin"
 	"github.com/hlhgogo/athena/pkg/app"
-	athCtx "github.com/hlhgogo/athena/pkg/context"
+	athCtx "github.com/hlhgogo/athena/pkg/gin-ext/context"
 	"github.com/hlhgogo/athena/pkg/log"
 	"github.com/satori/go.uuid"
 )
@@ -35,7 +35,8 @@ func Trace() gin.HandlerFunc {
 			commonValue = cv.GetCommonValue()
 			commonValue[athCtx.CtxValueCommonKeyTraceID] = requestId
 		}
-		athValue := athCtx.NewCtxValue(commonValue)
+		athValue := athCtx.GetCtxValue(c.Request.Context())
+		athValue = athValue.SetCommonValue(commonValue)
 		athContext, _ := athCtx.SetCtxValue(c.Request.Context(), athValue)
 		c.Request = c.Request.WithContext(athContext)
 		c.Header("Trace-Id", requestId)

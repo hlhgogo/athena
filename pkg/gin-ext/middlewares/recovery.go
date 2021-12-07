@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/hlhgogo/athena/pkg/errors"
-	"github.com/hlhgogo/athena/pkg/extend"
+	"github.com/hlhgogo/athena/pkg/gin-ext/errors"
+	"github.com/hlhgogo/athena/pkg/gin-ext/extend"
 	"runtime"
 	"runtime/debug"
 	"strings"
@@ -35,6 +35,7 @@ func Recovery() gin.HandlerFunc {
 	}
 }
 
+// Stack get stack
 func Stack(skip int, r interface{}) map[string]interface{} {
 
 	var errorMessage string

@@ -1,13 +1,16 @@
 package extend
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"github.com/hlhgogo/athena/pkg/config"
-	athCtx "github.com/hlhgogo/athena/pkg/context"
-	"github.com/hlhgogo/athena/pkg/errors"
+	athCtx "github.com/hlhgogo/athena/pkg/gin-ext/context"
+	"github.com/hlhgogo/athena/pkg/gin-ext/errors"
 	"github.com/hlhgogo/athena/pkg/log"
 	"net/http"
+	"time"
 )
 
 // Res api response结构
@@ -48,6 +51,7 @@ func SendData(ctx *gin.Context, resData interface{}, err error) {
 	var httpStatus = http.StatusOK
 	if err != nil {
 		res = failedRes()
+		captureException(ctx.Request.Context(), err)
 		if e, ok := err.(*errors.Err); ok {
 			httpStatus = http.StatusInternalServerError
 			if code := e.Code(); code != 0 {
@@ -125,6 +129,18 @@ func defaultRes() *Res {
 // failedRes 失败
 func failedRes() *Res {
 	return newRes(false, errors.ErrInternalServerError, struct{}{})
+}
+
+// captureException 上报异常
+func captureException(ctx context.Context, err error) {
+	cv := athCtx.GetCtxValue(ctx)
+	if cv == nil {
+		return
+	}
+	if hub := cv.GetSentryHub(); hub != nil {
+		defer sentry.Flush(2 * time.Second)
+		hub.CaptureException(err)
+	}
 }
 
 // successRes 成功

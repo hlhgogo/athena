@@ -99,16 +99,15 @@ func (f *LineFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	}
 
 	// log file and line
-	source := ""
-	fileLine, ok := entry.Data[Source]
-	if ok {
-		if v, ok := fileLine.(string); ok {
-			source = v
-		}
-	}
+	//source := ""
+	//fileLine, ok := entry.Data[Source]
+	//if ok {
+	//	if v, ok := fileLine.(string); ok {
+	//		source = v
+	//	}
+	//}
 
-	b.WriteString(fmt.Sprintf("%s [%s] [%s] %s - %s %s\n", config.Get().App.Name, strings.ToUpper(entry.Level.String()), entry.Time.Format(timestampFormat),
-		source, entry.Message, field))
+	b.WriteString(fmt.Sprintf("%s [%s] [%s] - %s %s\n", config.Get().App.Name, strings.ToUpper(entry.Level.String()), entry.Time.Format(timestampFormat), entry.Message, field))
 
 	return b.Bytes(), nil
 }
