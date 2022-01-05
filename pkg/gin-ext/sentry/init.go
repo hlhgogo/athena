@@ -41,15 +41,13 @@ func filterAlertWrapper(event *sentry.Event) *sentry.Event {
 }
 
 // Load 初始化sentry配置
-func Load() {
-	if err := sentry.Init(sentry.ClientOptions{
+func Load() error {
+	return sentry.Init(sentry.ClientOptions{
 		Dsn:         config.Get().Sentry.Dsn,
 		Environment: config.Get().Sentry.Environment,
 		Release:     config.Get().Sentry.Release,
 		BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
 			return filterAlertWrapper(event)
 		},
-	}); err != nil {
-		panic(err)
-	}
+	})
 }

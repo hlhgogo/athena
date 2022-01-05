@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/hlhgogo/athena/pkg/gin-ext/sentry"
+	"github.com/hlhgogo/athena/pkg/mysql"
+	"github.com/hlhgogo/athena/pkg/redis"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,17 +31,19 @@ func main() {
 	_ = config.InitConfig()
 	log.Setup()
 
-	//if err := redis.Load(); err != nil {
-	//	panic("Redis Error:" + err.Error())
-	//}
-	//
-	//if err := mysql.Load(); err != nil {
-	//	panic(err)
-	//}
+	// 初始化redis
+	if err := redis.Load(); err != nil {
+		panic(err)
+	}
+
+	// 初始化mysql
+	if err := mysql.Load(); err != nil {
+		panic(err)
+	}
 
 	// 初始化sentry事件上报
-	if config.Get().Sentry.Dsn != "" {
-		sentry.Load()
+	if err := sentry.Load(); err != nil {
+		panic(err)
 	}
 
 	// 事件初始化

@@ -11,6 +11,7 @@ import (
 var clientMapLock sync.Mutex
 var clientMap = make(map[string]*redis.Client)
 
+// Load 连接redis
 func Load() error {
 	configMap, err := config.GetRedisOptions()
 	if err != nil {

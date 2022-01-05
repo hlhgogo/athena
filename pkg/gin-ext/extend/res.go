@@ -46,13 +46,13 @@ func SendSuccess(ctx *gin.Context, resData interface{}) {
 
 // SendData 返回结果
 // 根据err 是否为nil判断返回成功或失败
-func SendData(ctx *gin.Context, resData interface{}, err error) {
+func SendData(ctx *gin.Context, resData interface{}, pErr error) {
 	var res *Res
 	var httpStatus = http.StatusOK
-	if err != nil {
+	if pErr != nil {
 		res = failedRes()
-		captureException(ctx.Request.Context(), err)
-		if e, ok := err.(*errors.Err); ok {
+		captureException(ctx.Request.Context(), pErr)
+		if e, ok := pErr.(*errors.Err); ok {
 			httpStatus = http.StatusInternalServerError
 			if code := e.Code(); code != 0 {
 				res.Code = code
@@ -60,7 +60,7 @@ func SendData(ctx *gin.Context, resData interface{}, err error) {
 			if msg := e.Message(); msg != "" {
 				res.Msg = msg
 			}
-		} else if e, ok := err.(*errors.BadRequestError); ok {
+		} else if e, ok := pErr.(*errors.BadRequestError); ok {
 			httpStatus = http.StatusBadRequest
 			if code := e.Code(); code != 0 {
 				res.Code = code
@@ -68,7 +68,7 @@ func SendData(ctx *gin.Context, resData interface{}, err error) {
 			if msg := e.Message(); msg != "" {
 				res.Msg = msg
 			}
-		} else if e, ok := err.(*errors.UnauthorizedError); ok {
+		} else if e, ok := pErr.(*errors.UnauthorizedError); ok {
 			httpStatus = http.StatusUnauthorized
 			if code := e.Code(); code != 0 {
 				res.Code = code
@@ -76,7 +76,7 @@ func SendData(ctx *gin.Context, resData interface{}, err error) {
 			if msg := e.Message(); msg != "" {
 				res.Msg = msg
 			}
-		} else if e, ok := err.(*errors.ErrNotFoundError); ok {
+		} else if e, ok := pErr.(*errors.ErrNotFoundError); ok {
 			httpStatus = http.StatusNotFound
 			if code := e.Code(); code != 0 {
 				res.Code = code
@@ -101,6 +101,11 @@ func SendData(ctx *gin.Context, resData interface{}, err error) {
 	// 记录响应日志
 	if responseByte, err := json.Marshal(res); err == nil {
 		log.InfoWithTrace(ctx.Request.Context(), "Response:%s", string(responseByte))
+	}
+
+	// 记录错误并上报
+	if pErr != nil {
+		log.ErrorWithTrace(ctx.Request.Context(), pErr, "Program Panic")
 	}
 
 	ctx.JSON(httpStatus, res)
