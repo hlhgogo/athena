@@ -24,6 +24,7 @@ func shutdown() error {
 	if err := http.Shutdown(); err != nil {
 		return err
 	}
+	event.Quit()
 	return nil
 }
 
