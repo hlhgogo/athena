@@ -1,18 +1,18 @@
 package main
 
 import (
-	"github.com/hlhgogo/athena/pkg/gin-ext/sentry"
 	"github.com/hlhgogo/athena/pkg/mysql"
 	"github.com/hlhgogo/athena/pkg/redis"
+	"github.com/hlhgogo/gin-ext/sentry"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/hlhgogo/athena/application/event"
 	"github.com/hlhgogo/athena/internal/http"
-	"github.com/hlhgogo/athena/pkg/config"
-	"github.com/hlhgogo/athena/pkg/log"
-	"github.com/hlhgogo/athena/pkg/sync/errgroup"
+	"github.com/hlhgogo/config"
+	"github.com/hlhgogo/gin-ext/log"
+	"github.com/hlhgogo/gin-ext/sync/errgroup"
 )
 
 var (

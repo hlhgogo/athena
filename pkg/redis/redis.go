@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
-	"github.com/hlhgogo/athena/pkg/config"
+	"github.com/hlhgogo/config"
 	"sync"
 	"time"
 )

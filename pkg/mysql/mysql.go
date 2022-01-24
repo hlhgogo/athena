@@ -3,7 +3,7 @@ package mysql
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/hlhgogo/athena/pkg/config"
+	"github.com/hlhgogo/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"sync"

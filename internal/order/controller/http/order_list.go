@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hlhgogo/athena/pkg/gin-ext/extend"
+	"github.com/hlhgogo/gin-ext/extend"
 )
 
 // orderListReq 查询订单列表请求结构体

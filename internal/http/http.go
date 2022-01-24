@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/hlhgogo/athena/pkg/config"
-	"github.com/hlhgogo/athena/pkg/gin-ext/middlewares"
-	"github.com/hlhgogo/athena/pkg/log"
+	"github.com/hlhgogo/config"
+	"github.com/hlhgogo/gin-ext/log"
+	"github.com/hlhgogo/gin-ext/middlewares"
 	"net/http"
 	"time"
 )
