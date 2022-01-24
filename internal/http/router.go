@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	orderApi "github.com/hlhgogo/athena/internal/order/controller/http"
+	DemoApi "github.com/hlhgogo/athena/internal/http/controller/demo"
 )
 
 const (
@@ -24,7 +24,7 @@ func initRouter(router *gin.Engine) error {
 
 	order := router.Group(v1prefix + "/")
 	{
-		order.GET("order_list", orderApi.OrderList)
+		order.GET("demo_list", DemoApi.OrderList)
 	}
 	return nil
 }
