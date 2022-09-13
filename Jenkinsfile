@@ -26,7 +26,7 @@ pipeline{
         stage("composer"){
             steps{
                 echo "====++++composer++++===="
-                sh 'go build -o ./savevault cmd/cmd.go'
+                sh '/usr/local/go/bin/go build -o ./savevault cmd/cmd.go'
             }
         }
     }
