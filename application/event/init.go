@@ -16,7 +16,7 @@ func Init() {
 	EventBusHandler.SubscribeAsync(subscribe.NewDemoSubscribe(), false)
 }
 
-// Quit Quit
+// Quit ...
 func Quit() {
 	log.Info("eventbus exit.")
 	EventBusHandler.Quit()

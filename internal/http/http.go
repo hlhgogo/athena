@@ -50,8 +50,7 @@ func Serve() error {
 		MaxHeaderBytes: maxHeaderBytes,
 	}
 
-	fmt.Printf("%s [INFO] [%14s] launch http listen [:%d] Run %s Model\n", config.Get().App.Name,
-		time.Unix(time.Now().Unix(), 0).Format("2006-01-02 15:04:05"),
+	log.Infof("launch http listen [:%d] Run %s Model",
 		config.Get().HttpServer.Port, config.Get().HttpServer.RunMode)
 
 	if err := httpServer.ListenAndServe(); err != nil {

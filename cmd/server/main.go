@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/hlhgogo/athena/pkg/mysql"
-	"github.com/hlhgogo/athena/pkg/redis"
 	"github.com/hlhgogo/gin-ext/sentry"
 	"os"
 	"os/signal"
@@ -12,12 +10,8 @@ import (
 	"github.com/hlhgogo/athena/internal/http"
 	"github.com/hlhgogo/config"
 	"github.com/hlhgogo/gin-ext/log"
-	"github.com/hlhgogo/gin-ext/sync/errgroup"
-)
-
-var (
-	g errgroup.Group
-	//tracingCloser io.Closer
+	"github.com/hlhgogo/gin-ext/mysql"
+	"github.com/hlhgogo/gin-ext/redis"
 )
 
 func shutdown() error {
