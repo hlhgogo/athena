@@ -26,6 +26,8 @@ func OrderList(ctx *gin.Context) {
 		return
 	}
 
+	//api.DemoAPI(ctx.Request.Context(), api.DemoAPIReq{ID: "1"})
+
 	resp := orderListResp{
 		ID:   "111",
 		Name: "2222",
